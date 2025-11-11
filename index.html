@@ -7,29 +7,38 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="page-wrap">
-    <div class="slider-container" aria-live="polite">
-      <div id="slide-number" class="slide-number">Slide #1 of 6</div>
+  <!-- Thema schakelknop-->
+  <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙 Dark</button>
 
-      <img class="active" src="imgs/01.png" alt="Slide 1" />
-      <img src="imgs/02.png" alt="Slide 2" />
-      <img src="imgs/03.png" alt="Slide 3" />
-      <img src="imgs/04.png" alt="Slide 4" />
-      <img src="imgs/05.png" alt="Slide 5" />
-      <img src="imgs/06.png" alt="Slide 6" />
+  <div class="slider-container">
+    <!-- a class named slider-number which was a typo; We adopted the correct class: slide-number -->
+    <div id="slide-number" class="slide-number">Slide #1 of 6</div>
 
-      <!--progress bar-->
-      <div class="progress"><span class="bar"></span></div>
-    </div>
+    <!-- The first image is visible, the rest loading="lazy" -->
+    <img class="active" src="imgs/01.png" alt="Slide 1" />
+    <img src="imgs/02.png" alt="Slide 2" loading="lazy" />
+    <img src="imgs/03.png" alt="Slide 3" loading="lazy" />
+    <img src="imgs/04.png" alt="Slide 4" loading="lazy" />
+    <img src="imgs/05.png" alt="Slide 5" loading="lazy" />
+    <img src="imgs/06.png" alt="Slide 6" loading="lazy" />
+  </div>
 
-    <div class="slider-controls">
-      <button id="prev" class="prev" aria-label="Previous slide">&#10094;</button>
-      <ul id="indicators" class="indicators"></ul>
-      <div class="ctrl-right">
-        <button id="play" class="play" aria-label="Play/Pause">Play</button>
-        <button id="next" class="next" aria-label="Next slide">&#10095;</button>
-      </div>
-    </div>
+  <div class="slider-controls">
+    <button id="prev" class="prev" aria-label="Previous slide">&#10094; Prev</button>
+    <!-- Colorful square indicators, we build them dynamically-->
+    <ul id="indicators" class="indicators"></ul>
+    <button id="next" class="next" aria-label="Next slide">Next &#10095;</button>
+  </div>
+
+  <!-- Mini bar-->
+  <div class="thumbs" id="thumbs">
+    <!--We use the same images as thumbnails (lighter thumbnails can be used later) -->
+    <img data-index="0" src="imgs/01.png" alt="Thumb 1" />
+    <img data-index="1" src="imgs/02.png" alt="Thumb 2" loading="lazy" />
+    <img data-index="2" src="imgs/03.png" alt="Thumb 3" loading="lazy" />
+    <img data-index="3" src="imgs/04.png" alt="Thumb 4" loading="lazy" />
+    <img data-index="4" src="imgs/05.png" alt="Thumb 5" loading="lazy" />
+    <img data-index="5" src="imgs/06.png" alt="Thumb 6" loading="lazy" />
   </div>
 
   <script src="main.js"></script>

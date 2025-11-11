@@ -1,130 +1,126 @@
-(function(){
+(function () {
   const images = Array.from(document.querySelectorAll('.slider-container img'));
   const slideNumber = document.getElementById('slide-number');
   const prevBtn = document.getElementById('prev');
   const nextBtn = document.getElementById('next');
-  const playBtn = document.getElementById('play');
   const indicators = document.getElementById('indicators');
-  const progressBar = document.querySelector('.progress .bar');
+  const thumbs = document.getElementById('thumbs');
+  const themeToggle = document.getElementById('theme-toggle');
 
-  // settings
-  const AUTOPLAY_MS = 3000; // Duration of each segment
-  let current = 0;
-  let timer = null;
-  let isPlaying = false;
+  let current = 0; // 0-based
 
-  // Create indicators by number of images
-  function buildIndicators(){
+  // === Building indicators dynamically ===
+  function buildIndicators() {
     indicators.innerHTML = '';
     images.forEach((_, i) => {
-      const dot = document.createElement('li');
-      dot.setAttribute('data-index', String(i));
-      indicators.appendChild(dot);
+      const li = document.createElement('li');
+      li.dataset.index = String(i);
+      indicators.appendChild(li);
     });
   }
 
-  // Configure the progress bar
-  function resetProgress() {
-    if (!progressBar) return;
-    progressBar.style.transition = 'none';
-    progressBar.style.width = '0%';
-    // transition
-    void progressBar.offsetWidth;
-    progressBar.style.transition = `width ${AUTOPLAY_MS}ms linear`;
-    if (isPlaying) progressBar.style.width = '100%';
-  }
-
-  //Update general status
-  function update(){
+  // === Update interface ===
+  function update() {
     images.forEach((img, i) => img.classList.toggle('active', i === current));
-    slideNumber.textContent = `Slide #${current + 1} of ${images.length}`;
+    const total = images.length;
+    slideNumber.textContent = `Slide #${current + 1} of ${total}`;
 
-    // Update indicators
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === images.length - 1;
+
     Array.from(indicators.children).forEach((li, i) => {
       li.classList.toggle('active', i === current);
     });
 
-    //Buttons (if you want to disable rotation, activate this)
-    // prevBtn.disabled = current === 0;
-    // nextBtn.disabled = current === images.length - 1;
+    // Then we update the status of the thumbnails
+    Array.from(thumbs.children).forEach((t, i) => {
+      t.classList.toggle('active', i === current);
+    });
 
-    resetProgress();
+    // Upload the following image in advance to smooth the transition (prefetch)
+    const nextIdx = Math.min(current + 1, images.length - 1);
+    const nextImg = images[nextIdx];
+    if (nextImg && nextImg.loading === 'lazy') {
+      // Read src to launch the download
+      const pre = new Image();
+      pre.src = nextImg.src;
+    }
   }
 
-  // Circular mobility
-  function goTo(idx) {
-    const len = images.length;
-    current = (idx + len) % len;
-    update();
-  }
-  function next(){ goTo(current + 1); }
-  function prev(){ goTo(current - 1); }
+  // === Button events ===
+  prevBtn.addEventListener('click', () => {
+    if (current > 0) { current--; update(); }
+  });
+  nextBtn.addEventListener('click', () => {
+    if (current < images.length - 1) { current++; update(); }
+  });
 
-  // Auto on/off
-  function play(){
-    if (isPlaying) return;
-    isPlaying = true;
-    playBtn.textContent = 'Pause';
-    resetProgress();
-    timer = setInterval(next, AUTOPLAY_MS);
-  }
-  function pause(){
-    isPlaying = false;
-    playBtn.textContent = 'Play';
-    if (timer) clearInterval(timer);
-    timer = null;
-    if (progressBar) progressBar.style.width = '0%';
-  }
-  function togglePlay(){
-    isPlaying ? pause() : play();
-  }
-
-  // Button events
-  prevBtn.addEventListener('click', prev);
-  nextBtn.addEventListener('click', next);
-  playBtn.addEventListener('click', togglePlay);
-
-  // Indicators (direct jump)
+  // ===Indicator events===
   indicators.addEventListener('click', (e) => {
     const li = e.target;
     if (li && li.tagName === 'LI') {
-      const idx = Number(li.getAttribute('data-index'));
-      if (!Number.isNaN(idx)) goTo(idx);
+      const idx = Number(li.dataset.index);
+      if (!Number.isNaN(idx)) {
+        current = idx; update();
+      }
     }
   });
 
-  // keyboard events
+  // === Microevents===
+  thumbs.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t && t.tagName === 'IMG' && t.dataset.index) {
+      const idx = Number(t.dataset.index);
+      if (!Number.isNaN(idx)) {
+        current = idx; update();
+      }
+    }
+  });
+
+  // ===Keyboard navigation===
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') prev();
-    if (e.key === 'ArrowRight') next();
-    if (e.key.toLowerCase() === ' ') { e.preventDefault(); togglePlay(); }
+    if (e.key === 'ArrowLeft' && current > 0) { current--; update(); }
+    if (e.key === 'ArrowRight' && current < images.length - 1) { current++; update(); }
   });
 
-  // Stop/play when passing the mouse
-  const container = document.querySelector('.slider-container');
-  container.addEventListener('mouseenter', () => { if (isPlaying) pause(); });
-  container.addEventListener('mouseleave', () => { if (!isPlaying) play(); });
-
-  // Stop when focus is lost (other tab)
-  window.addEventListener('blur', pause);
-
-  //Pull on mobile(Swipe)
-  let startX = 0, isTouching = false;
-  container.addEventListener('touchstart', (e) => {
-    isTouching = true;
-    startX = e.touches[0].clientX;
-  }, {passive:true});
-  container.addEventListener('touchend', (e) => {
-    if (!isTouching) return;
-    const endX = e.changedTouches[0].clientX;
-    const dx = endX - startX;
-    if (Math.abs(dx) > 40) { dx < 0 ? next() : prev(); }
-    isTouching = false;
+  // === Switch theme ===
+  function applyThemeFromStorage() {
+    const saved = localStorage.getItem('ssm-theme') || 'light';
+    if (saved === 'dark') {
+      document.body.classList.add('dark');
+      themeToggle.textContent = '☀️ Light';
+    } else {
+      document.body.classList.remove('dark');
+      themeToggle.textContent = '🌙 Dark';
+    }
+  }
+  themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    localStorage.setItem('ssm-theme', isDark ? 'dark' : 'light');
+    themeToggle.textContent = isDark ? '☀️ Light' : '🌙 Dark';
   });
+
+  // === Additional Lazy Loading via IntersectionObserver (Incentives Loading on Approach) ===
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          // If the image has not been downloaded yet, reading it will launch the download
+          const _ = img.src;
+          io.unobserve(img);
+        }
+      });
+    }, { root: document.querySelector('.slider-container'), threshold: 0.1 });
+
+    images.forEach((img, i) => {
+      if (i !== 0) io.observe(img);
+    });
+  }
 
   // init
   buildIndicators();
+  applyThemeFromStorage();
   update();
-  // Turn on automatically from the beginning (you can turn it off if you want)
-  play();
 })();
