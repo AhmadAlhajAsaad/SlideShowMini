@@ -1,117 +1,92 @@
-/* Reset simple */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
+/* Reset  */
+* { box-sizing: border-box; }
 body {
   font-family: Arial, sans-serif;
-  background: #f7f7f7;
-  padding: 20px;
+  background:#f7f7f7;
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-/* Fixed viewer size so images are visually equal*/
+/* To center everything*/
+.page-wrap { display:flex; flex-direction:column; align-items:center; gap:12px; }
+
+/* Container: Flexible size with reasonable width/height ratio*/
 .slider-container {
   position: relative;
-  width: 800px;
-  height: 450px;     
-  margin: 10px auto;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #111;   /*Dark background for a suitable frame with object-fit */
-  box-shadow: 0 10px 25px rgba(0,0,0,.08);
+  width: min(92vw, 860px);
+  aspect-ratio: 16 / 9;       /* Maintains a beautiful shape*/
+  background:#111;            /* background letterbox */
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 8px 24px rgba(0,0,0,.12);
 }
 
-/*  slide-number */
+/* slide number*/
 .slide-number {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(0,0,0,.6);
-  color: #fff;
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-size: 14px;
-  z-index: 2;
+  position:absolute;
+  top:10px; right:12px;
+  padding:4px 8px;
+  font-size:12px;
+  background:rgba(0,0,0,.65);
+  color:#fff;
+  border-radius:6px;
+  z-index:3;
 }
 
-/* All images expand to fill the container while maintaining the ratio */
+/*Images: Uniformity of size and survival of proportions*/
 .slider-container img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* Uniform appearance with different image dimensions */
-  opacity: 0;
-  transition: opacity .4s ease;
-  z-index: 1;
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit: contain;        /* The most important line to unify the view*/
+  display:none;
+  background:#111;
+}
+.slider-container img.active { display:block; }
+
+/* progress bar*/
+.progress {
+  position:absolute; left:0; right:0; bottom:0;
+  height:4px; background:rgba(255,255,255,.2);
+  z-index:3;
+}
+.progress .bar {
+  display:block; height:100%; width:0%;
+  background:#35bf6a;
+  transition: width .2s linear;
 }
 
-.slider-container img.active {
-  opacity: 1;
-}
-
-/* control bar */
+/* control elements*/
 .slider-controls {
-  width: 800px;  
-  margin: 12px auto 0;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  width:min(92vw, 860px);
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px;
 }
-
-/* Previous/Next Buttons*/
-.slider-controls .prev,
-.slider-controls .next {
-  background-color: rgba(53, 191, 106, 0.9);
-  color: #fff;
-  border: none;
-  padding: 10px 14px;
-  cursor: pointer;
-  text-align: center;
-  border-radius: 24px;
-  font-size: 16px;
-  user-select: none;
-  font-weight: bold;
-  transition: transform .1s ease, opacity .2s ease;
+.slider-controls button {
+  border:0; background:#fff; color:#222;
+  padding:10px 14px; border-radius:10px;
+  cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.08);
+  font-weight:bold;
 }
+.slider-controls button:disabled { opacity:.5; cursor:not-allowed; }
+.ctrl-right { display:flex; gap:10px; align-items:center; }
 
-.slider-controls .prev:hover,
-.slider-controls .next:hover { transform: translateY(-1px); }
-
-.slider-controls .prev.disabled,
-.slider-controls .next.disabled {
-  background-color: rgba(95, 153, 140, 0.5);
-  cursor: not-allowed;
-  opacity: .7;
+/*Indicators: squares*/
+.indicators {
+  list-style:none; display:flex; gap:8px; margin:0; padding:0;
+  flex-wrap:wrap; justify-content:center; align-items:center;
 }
-
-/*Square indicators*/
-.slider-controls .indicators {
-  width: 60%;
+.indicators li {
+  width:18px; height:18px;
+  background:#cfd8dc; border:1px solid #90a4ae;
+  border-radius:4px; cursor:pointer;
+  transition:transform .12s ease, background .12s ease, border .12s ease;
 }
+.indicators li:hover { transform: scale(1.08); }
+.indicators li.active { background:#35bf6a; border-color:#2fa15a; }
 
-.slider-controls .indicators ul {
-  list-style: none;
-  text-align: center;
-}
-
-.slider-controls .indicators ul li {
-  display: inline-block;
-  width: 16px;         
-  height: 16px;
-  margin: 0 6px;
-  background-color: #cfd8dc;
-  border: 1px solid #90a4ae;
-  border-radius: 4px;
-  cursor: pointer;
-  line-height: 16px;
-  font-weight: bold;
-  transition: transform .12s ease, background .12s ease;
-  
-}
-
-.slider-controls .indicators ul li:hover { transform: scale(1.1); }
-
-.slider-controls .indicators ul li.active {
-  background-color: rgba(53, 191, 106, 0.9);
-  border-color: #1b5e20;
-}
+/* Arrow buttons*/
+.prev, .next { width:42px; height:42px; display:inline-grid; place-items:center; }
+.play { min-width:64px; }

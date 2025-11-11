@@ -7,27 +7,29 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="page-wrap">
+    <div class="slider-container" aria-live="polite">
+      <div id="slide-number" class="slide-number">Slide #1 of 6</div>
 
-  <div class="slider-container">
-    <div id="slide-number" class="slide-number">Slide #1 of 6</div>
+      <img class="active" src="imgs/01.png" alt="Slide 1" />
+      <img src="imgs/02.png" alt="Slide 2" />
+      <img src="imgs/03.png" alt="Slide 3" />
+      <img src="imgs/04.png" alt="Slide 4" />
+      <img src="imgs/05.png" alt="Slide 5" />
+      <img src="imgs/06.png" alt="Slide 6" />
 
-    <img class="active" src="imgs/01.png" alt="Slide 1" />
-    <img src="imgs/02.png" alt="Slide 2" />
-    <img src="imgs/03.png" alt="Slide 3" />
-    <img src="imgs/04.png" alt="Slide 4" />
-    <img src="imgs/05.png" alt="Slide 5" />
-    <img src="imgs/06.png" alt="Slide 6" />
-  </div>
-
-  <div class="slider-controls">
-    <span id="prev" class="prev">&#10094; Previous</span>
-
-    <!-- Box pointers: We will automatically build <li> inside this<ul> -->
-    <div id="indicators" class="indicators">
-      <ul></ul>
+      <!--progress bar-->
+      <div class="progress"><span class="bar"></span></div>
     </div>
 
-    <span id="next" class="next">Next &#10095;</span>
+    <div class="slider-controls">
+      <button id="prev" class="prev" aria-label="Previous slide">&#10094;</button>
+      <ul id="indicators" class="indicators"></ul>
+      <div class="ctrl-right">
+        <button id="play" class="play" aria-label="Play/Pause">Play</button>
+        <button id="next" class="next" aria-label="Next slide">&#10095;</button>
+      </div>
+    </div>
   </div>
 
   <script src="main.js"></script>
